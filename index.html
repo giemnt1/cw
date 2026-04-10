@@ -124,10 +124,6 @@ function render(){
     console.log("sort",sort)
     console.log("data",data)
 
-    let filteredOLD=data.filter(x=>
-        (!year||x.date.getFullYear()==year)        //&& x.file.toLowerCase().includes(search)
-    );
-
     let filtered = data.filter(x => {
         const matchesYear = !year || x.date.getFullYear() === parseInt(year);
         //const matchesSearch = x.file && x.file.toLowerCase().includes(search);
