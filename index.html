@@ -79,6 +79,7 @@ input,select{padding:10px;border-radius:8px;border:1px solid #ccc;flex:1;}
 </div>
 
 <script>
+/*
 const mesi=["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno",
 "Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
 
@@ -160,11 +161,97 @@ function render(){
     history.replaceState(null,"","?"+p.toString());
 }
 
-document.getElementById("search").oninput=render;
+// document.getElementById("search").oninput=render;
+monthSel.onchange=render;
 yearSel.onchange=render;
 document.getElementById("sort").onchange=render;
 
 render();
+*/
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Assuming 'files' is an array of filenames like 'crossword_231005120000.html'
+    // If files.js defines this differently, adjust accordingly.
+    const files = window.files || []; 
+    const yearSelect = document.getElementById("year");
+    const monthSelect = document.getElementById("month");
+    const searchInput = document.getElementById("search");
+    const sortSelect = document.getElementById("sort");
+    const listElement = document.getElementById("list");
+
+    // Helper: Map month numbers to names
+    const monthNames = ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"];
+
+    // 1. Populate Dropdowns (Years and Months)
+    function populateFilters() {
+        const years = new Set();
+        const months = new Set();
+
+        files.forEach(f => {
+            // Extract YY and MM from crossword_YYMMDD...
+            const match = f.match(/crossword_(\d{2})(\d{2})/);
+            if (match) {
+                years.add(`20${match[1]}`);
+                months.add(match[2]); // Keeps MM as string "01"-"12"
+            }
+        });
+
+        // Populate Years
+        Array.from(years).sort().reverse().forEach(y => {
+            yearSelect.options.add(new Option(y, y));
+        });
+
+        // Populate Months (sorted)
+        Array.from(months).sort().forEach(m => {
+            monthSelect.options.add(new Option(monthNames[parseInt(m)-1], m));
+        });
+    }
+
+    // 2. Filter and Display
+    function updateList() {
+        const yearFilter = yearSelect.value;
+        const monthFilter = monthSelect.value;
+        const searchTerm = searchInput.value.toLowerCase();
+        
+        let filteredFiles = files.filter(f => {
+            const match = f.match(/crossword_(\d{2})(\d{2})/);
+            const fileYear = match ? `20${match[1]}` : "";
+            const fileMonth = match ? match[2] : "";
+
+            const matchesYear = !yearFilter || fileYear === yearFilter;
+            const matchesMonth = !monthFilter || fileMonth === monthFilter;
+            const matchesSearch = !searchTerm || f.toLowerCase().includes(searchTerm);
+
+            return matchesYear && matchesMonth && matchesSearch;
+        });
+
+        // Sorting
+        if (sortSelect.value === "desc") {
+            filteredFiles.sort().reverse();
+        } else {
+            filteredFiles.sort();
+        }
+
+        // Render (simplified)
+        listElement.innerHTML = filteredFiles.map(f => `<li><a href="${f}">${f}</a></li>`).join('');
+    }
+
+    // Event Listeners
+    yearSelect.addEventListener("change", updateList);
+    monthSelect.addEventListener("change", updateList);
+    searchInput.addEventListener("input", updateList);
+    sortSelect.addEventListener("change", updateList);
+
+    // Init
+    populateFilters();
+    updateList();
+});
+
+
+
+  
 </script>
 
 </body>
