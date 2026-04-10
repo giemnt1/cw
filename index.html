@@ -63,12 +63,15 @@ input,select{padding:10px;border-radius:8px;border:1px solid #ccc;flex:1;}
 <div class="stats" id="stats"></div>
 
 <div class="controls">
-<input id="search" placeholder="Cerca...">
-<select id="year"><option value="">Tutti gli anni</option></select>
-<select id="sort">
-<option value="desc">Più recenti</option>
-<option value="asc">Più vecchi</option>
-</select>
+  <input id="search" placeholder="Cerca...">
+  <!-- ADD THIS LINE FOR MONTHS -->
+  <select id="month"><option value="">Tutti i mesi</option></select>
+  <select id="year"><option value="">Tutti gli anni</option></select>
+  
+  <select id="sort">
+    <option value="desc">Più recenti</option>
+    <option value="asc">Più vecchi</option>
+  </select>
 </div>
 
 <ul id="list" class="list"></ul>
