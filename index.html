@@ -92,11 +92,11 @@ function fmt(d){
 }
 
 let data = FILES.map(f=>({file:f,date:parseDate(f)})).filter(x=>x.date);
-console.log(data)
 const list=document.getElementById("list");
 const yearSel=document.getElementById("year");
 
 const years=[...new Set(data.map(x=>x.date.getFullYear()))].sort((a,b)=>b-a);
+console.log(years)
 years.forEach(y=>{
     let o=document.createElement("option");
     o.value=y;o.textContent=y;
@@ -111,6 +111,10 @@ function render(){
     const search=document.getElementById("search").value.toLowerCase();
     const year=yearSel.value;
     const sort=document.getElementById("sort").value;
+
+    console.log(search)    
+    console.log(year)
+    console.log(sort)
 
     let filtered=data.filter(x=>
         (!year||x.date.getFullYear()==year)&&
