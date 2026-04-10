@@ -116,11 +116,18 @@ function render(){
     console.log("year",year)
     console.log("sort",sort)
 
-    let filtered=data.filter(x=>
+    let filteredOLD=data.filter(x=>
         (!year||x.date.getFullYear()==year)&&
         x.file.toLowerCase().includes(search)
     );
 
+    let filtered = data.filter(x => {
+        const matchesYear = !year || x.date.getFullYear() === parseInt(year);
+        const matchesSearch = x.file && x.file.toLowerCase().includes(search);
+        return matchesYear && matchesSearch;
+    });
+
+  
     filtered.sort((a,b)=>sort==="desc"?b.date-a.date:a.date-b.date);
 
     list.innerHTML="";
