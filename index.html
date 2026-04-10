@@ -95,8 +95,11 @@ let data = FILES.map(f=>({file:f,date:parseDate(f)})).filter(x=>x.date);
 const list=document.getElementById("list");
 const yearSel=document.getElementById("year");
 
+const months=[...new Set(data.map(x=>x.date.getFullMonth()))].sort((a,b)=>b-a);
 const years=[...new Set(data.map(x=>x.date.getFullYear()))].sort((a,b)=>b-a);
+console.log(months)
 console.log(years)
+  
 years.forEach(y=>{
     let o=document.createElement("option");
     o.value=y;o.textContent=y;
