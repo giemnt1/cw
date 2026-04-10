@@ -75,7 +75,7 @@ function fmt(d){
 }
 
 let data = FILES.map(f=>({file:f,date:parseDate(f)})).filter(x=>x.date);
-
+console.log(data)
 const list=document.getElementById("list");
 const yearSel=document.getElementById("year");
 
