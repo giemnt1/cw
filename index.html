@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Archivio Crossword</title>
+
+<style>
+:root {
+    --bg: #f4f6f8;
+    --card: #ffffff;
+    --text: #2c3e50;
+    --sub: #7f8c8d;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #1e1e1e;
+        --card: #2c2c2c;
+        --text: #ecf0f1;
+        --sub: #bdc3c7;
+    }
+}
+
+body {
+    font-family: system-ui;
+    background: var(--bg);
+    margin: 0;
+}
+
+.container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+input, select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    flex: 1;
+}
+
+.list li {
+    background: var(--card);
+    margin: 10px 0;
+    border-radius: 12px;
+    list-style: none;
+}
+
+.list a {
+    display: block;
+    padding: 15px;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: bold;
+}
+
+.list span {
+    display: block;
+    color: var(--sub);
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+<h1>🧩 Archivio Crossword</h1>
+
+<div class="controls">
+<input type="text" id="search" placeholder="Cerca...">
+<select id="year"><option value="">Tutti gli anni</option></select>
+<select id="sort">
+<option value="desc">Più recenti</option>
+<option value="asc">Più vecchi</option>
+</select>
+</div>
+
+<ul id="list" class="list"></ul>
+</div>
+
+<script>
+const USER = "USER";
+const REPO = "REPO";
+
+const mesi = [
+"Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno",
+"Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"
+];
+
+function parseDate(filename) {
+    const match = filename.match(/crossword_(\\d{12})/);
+    if (!match) return null;
+
+    const s = match[1];
+    const year = 2000 + parseInt(s.slice(0,2));
+    const month = parseInt(s.slice(2,4)) - 1;
+    const day = parseInt(s.slice(4,6));
+    const hour = parseInt(s.slice(6,8));
+    const min = parseInt(s.slice(8,10));
+
+    return new Date(year, month, day, hour, min);
+}
+
+function formatDate(d) {
+    return `${d.getDate()} ${mesi[d.getMonth()]} ${d.getFullYear()}, ore ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+}
+
+fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/`)
+.then(r => r.json())
+.then(files => {
+
+    let data = files
+        .filter(f => f.name.startsWith("crossword_") && f.name.endsWith(".html"))
+        .map(f => {
+            return {
+                file: f.name,
+                url: f.download_url,
+                date: parseDate(f.name)
+            };
+        })
+        .filter(x => x.date);
+
+    const list = document.getElementById("list");
+    const yearSelect = document.getElementById("year");
+
+    const years = [...new Set(data.map(x => x.date.getFullYear()))].sort((a,b)=>b-a);
+    years.forEach(y => {
+        let opt = document.createElement("option");
+        opt.value = y;
+        opt.textContent = y;
+        yearSelect.appendChild(opt);
+    });
+
+    function render() {
+        const search = document.getElementById("search").value.toLowerCase();
+        const year = yearSelect.value;
+        const sort = document.getElementById("sort").value;
+
+        let filtered = data.filter(x => {
+            return (!year || x.date.getFullYear() == year) &&
+                   x.file.toLowerCase().includes(search);
+        });
+
+        filtered.sort((a,b) => sort === "desc" ? b.date - a.date : a.date - b.date);
+
+        list.innerHTML = "";
+
+        filtered.forEach(x => {
+            const li = document.createElement("li");
+            li.innerHTML = `
+                <a href="${x.url}" target="_blank">
+                    Crossword
+                    <span>${formatDate(x.date)}</span>
+                </a>
+            `;
+            list.appendChild(li);
+        });
+    }
+
+    document.getElementById("search").addEventListener("input", render);
+    yearSelect.addEventListener("change", render);
+    document.getElementById("sort").addEventListener("change", render);
+
+    render();
+});
+</script>
+
+</body>
+</html>
