@@ -6,6 +6,18 @@
 
 <script src="files.js"></script>
 
+<script>
+  function showFiles() {
+    if (typeof FILES === 'undefined') {
+      alert("FILES is not defined — files.js not loaded!");
+    } else {
+      alert("FILES contains:\n" + FILES.join("\n"));
+    }
+  }
+</script>
+
+<button onclick="showFiles()">Show files.js content</button>
+
 <style>
 :root {
     --bg:#f4f6f8;
