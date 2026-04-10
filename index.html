@@ -4,77 +4,50 @@
 <meta charset="UTF-8">
 <title>Archivio Crossword</title>
 
+<script src="files.js"></script>
+
 <style>
 :root {
-    --bg: #f4f6f8;
-    --card: #ffffff;
-    --text: #2c3e50;
-    --sub: #7f8c8d;
+    --bg:#f4f6f8;
+    --card:#fff;
+    --text:#2c3e50;
+    --sub:#7f8c8d;
+    --accent:#3498db;
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg: #1e1e1e;
-        --card: #2c2c2c;
-        --text: #ecf0f1;
-        --sub: #bdc3c7;
-    }
-}
+@media (prefers-color-scheme: dark){
+:root{
+    --bg:#1e1e1e;
+    --card:#2c2c2c;
+    --text:#ecf0f1;
+    --sub:#bdc3c7;
+}}
 
-body {
-    font-family: system-ui;
-    background: var(--bg);
-    margin: 0;
-}
+body {font-family:system-ui;background:var(--bg);margin:0;}
+.container{max-width:900px;margin:30px auto;padding:20px;}
 
-.container {
-    max-width: 900px;
-    margin: 30px auto;
-    padding: 20px;
-}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px;}
+input,select{padding:10px;border-radius:8px;border:1px solid #ccc;flex:1;}
 
-.controls {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-}
+.stats{margin-bottom:10px;color:var(--sub);}
 
-input, select {
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    flex: 1;
-}
+.list li{background:var(--card);margin:10px 0;border-radius:12px;list-style:none;}
+.list a{display:block;padding:15px;text-decoration:none;color:var(--text);font-weight:bold;}
+.list span{display:block;color:var(--sub);}
 
-.list li {
-    background: var(--card);
-    margin: 10px 0;
-    border-radius: 12px;
-    list-style: none;
-}
-
-.list a {
-    display: block;
-    padding: 15px;
-    text-decoration: none;
-    color: var(--text);
-    font-weight: bold;
-}
-
-.list span {
-    display: block;
-    color: var(--sub);
-}
+.latest{border:2px solid var(--accent);}
 </style>
 </head>
 
 <body>
 <div class="container">
+
 <h1>🧩 Archivio Crossword</h1>
 
+<div class="stats" id="stats"></div>
+
 <div class="controls">
-<input type="text" id="search" placeholder="Cerca...">
+<input id="search" placeholder="Cerca...">
 <select id="year"><option value="">Tutti gli anni</option></select>
 <select id="sort">
 <option value="desc">Più recenti</option>
@@ -83,93 +56,80 @@ input, select {
 </div>
 
 <ul id="list" class="list"></ul>
+
 </div>
 
 <script>
-const USER = "USER";
-const REPO = "REPO";
+const mesi=["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno",
+"Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
 
-const mesi = [
-"Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno",
-"Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"
-];
-
-function parseDate(filename) {
-    const match = filename.match(/crossword_(\\d{12})/);
-    if (!match) return null;
-
-    const s = match[1];
-    const year = 2000 + parseInt(s.slice(0,2));
-    const month = parseInt(s.slice(2,4)) - 1;
-    const day = parseInt(s.slice(4,6));
-    const hour = parseInt(s.slice(6,8));
-    const min = parseInt(s.slice(8,10));
-
-    return new Date(year, month, day, hour, min);
+function parseDate(f){
+    const m=f.match(/crossword_(\\d{12})/);
+    if(!m) return null;
+    const s=m[1];
+    return new Date(2000+ +s.slice(0,2), s.slice(2,4)-1, s.slice(4,6), s.slice(6,8), s.slice(8,10));
 }
 
-function formatDate(d) {
+function fmt(d){
     return `${d.getDate()} ${mesi[d.getMonth()]} ${d.getFullYear()}, ore ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
 }
 
-fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/`)
-.then(r => r.json())
-.then(files => {
+let data = FILES.map(f=>({file:f,date:parseDate(f)})).filter(x=>x.date);
 
-    let data = files
-        .filter(f => f.name.startsWith("crossword_") && f.name.endsWith(".html"))
-        .map(f => {
-            return {
-                file: f.name,
-                url: f.download_url,
-                date: parseDate(f.name)
-            };
-        })
-        .filter(x => x.date);
+const list=document.getElementById("list");
+const yearSel=document.getElementById("year");
 
-    const list = document.getElementById("list");
-    const yearSelect = document.getElementById("year");
+const years=[...new Set(data.map(x=>x.date.getFullYear()))].sort((a,b)=>b-a);
+years.forEach(y=>{
+    let o=document.createElement("option");
+    o.value=y;o.textContent=y;
+    yearSel.appendChild(o);
+});
 
-    const years = [...new Set(data.map(x => x.date.getFullYear()))].sort((a,b)=>b-a);
-    years.forEach(y => {
-        let opt = document.createElement("option");
-        opt.value = y;
-        opt.textContent = y;
-        yearSelect.appendChild(opt);
+// URL params
+const params=new URLSearchParams(location.search);
+if(params.get("year")) yearSel.value=params.get("year");
+
+function render(){
+    const search=document.getElementById("search").value.toLowerCase();
+    const year=yearSel.value;
+    const sort=document.getElementById("sort").value;
+
+    let filtered=data.filter(x=>
+        (!year||x.date.getFullYear()==year)&&
+        x.file.toLowerCase().includes(search)
+    );
+
+    filtered.sort((a,b)=>sort==="desc"?b.date-a.date:a.date-b.date);
+
+    list.innerHTML="";
+    
+    filtered.forEach((x,i)=>{
+        const li=document.createElement("li");
+        if(i===0 && sort==="desc") li.classList.add("latest");
+
+        li.innerHTML=`
+        <a href="${x.file}">
+            Crossword
+            <span>${fmt(x.date)}</span>
+        </a>`;
+        list.appendChild(li);
     });
 
-    function render() {
-        const search = document.getElementById("search").value.toLowerCase();
-        const year = yearSelect.value;
-        const sort = document.getElementById("sort").value;
+    document.getElementById("stats").textContent =
+        `${filtered.length} crossword visualizzati su ${data.length}`;
 
-        let filtered = data.filter(x => {
-            return (!year || x.date.getFullYear() == year) &&
-                   x.file.toLowerCase().includes(search);
-        });
+    // aggiorna URL
+    const p=new URLSearchParams();
+    if(year) p.set("year",year);
+    history.replaceState(null,"","?"+p.toString());
+}
 
-        filtered.sort((a,b) => sort === "desc" ? b.date - a.date : a.date - b.date);
+document.getElementById("search").oninput=render;
+yearSel.onchange=render;
+document.getElementById("sort").onchange=render;
 
-        list.innerHTML = "";
-
-        filtered.forEach(x => {
-            const li = document.createElement("li");
-            li.innerHTML = `
-                <a href="${x.url}" target="_blank">
-                    Crossword
-                    <span>${formatDate(x.date)}</span>
-                </a>
-            `;
-            list.appendChild(li);
-        });
-    }
-
-    document.getElementById("search").addEventListener("input", render);
-    yearSelect.addEventListener("change", render);
-    document.getElementById("sort").addEventListener("change", render);
-
-    render();
-});
+render();
 </script>
 
 </body>
