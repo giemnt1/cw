@@ -99,9 +99,9 @@ let data = FILES.map(f=>({file:f,date:parseDate(f)})).filter(x=>x.date);
 const list=document.getElementById("list");
 const yearSel=document.getElementById("year");
 console.log("data",data)
-const months=[...new Set(data.map(x=>x.date.getMonth()))].sort((a,b)=>b-a);
+//const months=[...new Set(data.map(x=>x.date.getMonth()))].sort((a,b)=>b-a);
 const years=[...new Set(data.map(x=>x.date.getFullYear()))].sort((a,b)=>b-a);
-console.log(months)
+//console.log(months)
 console.log(years)
   
 years.forEach(y=>{
@@ -119,20 +119,20 @@ function render(){
     const year=yearSel.value;
     const sort=document.getElementById("sort").value;
 
-    console.log("search",search)    
+    //console.log("search",search)    
     console.log("year",year)
     console.log("sort",sort)
     console.log("data",data)
 
     let filteredOLD=data.filter(x=>
-        (!year||x.date.getFullYear()==year)&&
+        (!year||x.date.getFullYear()==year)//&&
         x.file.toLowerCase().includes(search)
     );
 
     let filtered = data.filter(x => {
         const matchesYear = !year || x.date.getFullYear() === parseInt(year);
-        const matchesSearch = x.file && x.file.toLowerCase().includes(search);
-        return matchesYear && matchesSearch;
+        //const matchesSearch = x.file && x.file.toLowerCase().includes(search);
+        return matchesYear; // && matchesSearch;
     });
 
   
