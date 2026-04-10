@@ -32,6 +32,12 @@ jobs:
           done
           echo "];" >> files.js
 
+      - name: Debug
+        run: |
+          echo "Current directory: $(pwd)"
+          ls -la *.js *.html 2>/dev/null || echo "No js/html files found"
+          cat files.js 2>/dev/null || echo "files.js not found"
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
