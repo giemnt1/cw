@@ -41,33 +41,24 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
-
-
-name: Generate file list
-
-on:
-  push:
-    branches: [ main ]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-
+  
       - name: Generate files.js
         run: |
           echo "const FILES = [" > files.js
           for f in crossword_*.html; do
-            echo "  \"$f\"," >> files.js
+            [ -f "$f" ] && echo "  \"$f\"," >> files.js
           done
           echo "];" >> files.js
-
-      - name: Commit files.js
+      
+      - name: Commit files.js if changed
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add files.js
-          git commit -m "update files list" || exit 0
-          git push
+          if git diff --quiet files.js; then
+            echo "No changes"
+          else
+            git config user.name "github-actions"
+            git config user.email "actions@github.com"
+            git add files.js
+            git commit -m "auto update"
+            git push
+          fi
+
