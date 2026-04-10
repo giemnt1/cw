@@ -112,9 +112,9 @@ function render(){
     const year=yearSel.value;
     const sort=document.getElementById("sort").value;
 
-    console.log(search)    
-    console.log(year)
-    console.log(sort)
+    console.log("search",search)    
+    console.log("year",year)
+    console.log("sort",sort)
 
     let filtered=data.filter(x=>
         (!year||x.date.getFullYear()==year)&&
