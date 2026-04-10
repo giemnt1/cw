@@ -213,7 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateList() {
         const yearFilter = yearSelect.value;
         const monthFilter = monthSelect.value;
-        const searchTerm = searchInput.value.toLowerCase();
+        //const searchTerm = searchInput.value.toLowerCase();
         
         let filteredFiles = files.filter(f => {
             const match = f.match(/crossword_(\d{2})(\d{2})/);
@@ -222,9 +222,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const matchesYear = !yearFilter || fileYear === yearFilter;
             const matchesMonth = !monthFilter || fileMonth === monthFilter;
-            const matchesSearch = !searchTerm || f.toLowerCase().includes(searchTerm);
+            //const matchesSearch = !searchTerm || f.toLowerCase().includes(searchTerm);
 
-            return matchesYear && matchesMonth && matchesSearch;
+            return matchesYear && matchesMonth; // && matchesSearch;
         });
 
         // Sorting
