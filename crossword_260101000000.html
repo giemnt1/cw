@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mio Cruciverba 6x6</title>
+    <!-- Carica lo script ufficiale -->
+    <script src="https://github.io"></script>
+</head>
+<body>
+
+<div id="exolve"></div>
+
+<script>
+createExolve(`
+exolve-begin
+  exolve-id: schema-6x6
+  exolve-width: 6
+  exolve-height: 6
+  
+  # Traduzioni richieste
+  exolve-option: language-across: Orizzontali
+  exolve-option: language-down: Verticali
+  exolve-option: language-check: Verifica
+  exolve-option: language-reveal: Rivela
+  exolve-option: language-clear: Cancella
+
+  exolve-grid:
+    S C H E M A
+    T . . . . .
+    A M I C O .
+    T . . . . .
+    O . . . . .
+    . . . . . .
+
+  exolve-across:
+    1 Struttura del cruciverba (6)
+    3 Persona fidata (5)
+
+  exolve-down:
+    1 Una nazione (5)
+exolve-end
+`, "exolve");
+</script>
+
+</body>
+</html>
