@@ -190,7 +190,21 @@ exolve-down:
 
 
 exolve-end:
-`;</script>
+`;
+  
+const startTime = Date.now();
+document.addEventListener('exolve', function (e) {
+  console.log(e);
+  let msg = 'You have completed the puzzle';
+  if (e.detail.id) msg += ' with id ' + e.detail.id;
+  if (e.detail.title) msg += ', titled ' + e.detail.title;
+  if (e.detail.setter) msg += ' by ' + e.detail.setter;
+  msg += '.';
+  if (e.detail.knownCorrect) msg += ' Your solution is correct!';
+  if (e.detail.knownIncorrect) msg += ' Your solution has mistakes.';
+  msg += ' Time spent: ' + Math.round((Date.now() - startTime) / 60000) + ' minutes.';
+  alert(msg);
+});</script>
 </head>
 <body>
 <script>
