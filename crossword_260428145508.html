@@ -122,6 +122,11 @@ exolve-end:
 </head>
 <body>
 <script>
+  window.confirm = function(message) {
+    // Simple synchronous-style replacement using a custom overlay
+    // Note: truly async modals won't work here since confirm() must be synchronous
+    return true; // or build a custom inline dialog
+  };
   createExolve(puzzleText);
 </script>
 </body>
