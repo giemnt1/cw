@@ -122,11 +122,14 @@ exolve-end:
 </head>
 <body>
 <script>
-  window.confirm = function(message) {
-    // Simple synchronous-style replacement using a custom overlay
-    // Note: truly async modals won't work here since confirm() must be synchronous
-    return true; // or build a custom inline dialog
-  };
   createExolve(puzzleText);
+    // Dopo che l'oggetto puzzle è stato creato (es. 'puz')
+puzzleText.clearAll = function() {
+    // Invece di confirm(), usa la tua logica o una modale asincrona
+    // Nota: dovrai gestire la chiamata puz.reallyClearAll() dopo il click sulla tua modale
+    if (customModalConfirm("Vuoi pulire tutto?")) {
+        this.reallyClearAll();
+    }
+};
 </script>
 </body>
