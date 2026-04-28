@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <!-- MIT License Copyright (c) 2019 Viresh Ratnakar. The latest code and doc at: https://github.com/viresh-ratnakar/exolve-->
 <title>Cruciverba</title>
+<script>
+  window.confirm = function(message) {
+    // Always return true (auto-confirm), or implement your own UI
+    return true;
+  };
+</script>
 <link rel="stylesheet" href="https://viresh-ratnakar.github.io/exolve-m.css"/><script src="https://viresh-ratnakar.github.io/exolve-m.js"></script></html>
 <script>
 const puzzleText = `
@@ -122,16 +128,7 @@ exolve-end:
 </head>
 <body>
 <script>
-        // Dopo che l'oggetto puzzle è stato creato (es. 'puz')
-    puzzleText.clearAll = function() {
-    // Invece di confirm(), usa la tua logica o una modale asincrona
-    // Nota: dovrai gestire la chiamata puz.reallyClearAll() dopo il click sulla tua modale
-    if (customModalConfirm("Vuoi pulire tutto?")) {
-        this.reallyClearAll();
-    }
   createExolve(puzzleText);
-
-
 };
 </script>
 </body>
